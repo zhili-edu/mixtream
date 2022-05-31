@@ -1,0 +1,32 @@
+component: http
+name: zl-mixtream
+
+inputs:
+  src:
+    dist: ./
+    hook: npm run build
+    exclude:
+      - .env
+  faas:
+    runtime: Nodejs16.13
+    framework: nextjs
+    name: ${name}
+
+  apigw:
+    protocols:
+      - http
+      - https
+    customDomains:
+      - domain: mixtream.zhili-edu.com
+        isForcedHttps: true
+        certId: v9EhNZDO
+        customMap: true
+        isDefaultMapping: false
+        pathMap:
+          - path: /
+            environment: release
+        protocols:
+          - http
+          - https
+
+app: zl-mixtream
