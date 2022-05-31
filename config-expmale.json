@@ -1,0 +1,12 @@
+{
+    "passphrase": "[password]",
+    "jwtSecret": "[jwt secret]",
+    "streamInfo": {
+        "pushDomain": "push.domain",
+        "playDomain": "play.domain",
+        "secretId": "[your tencent cloud secret id]",
+        "secretKey": "[your tencent cloud secret key]",
+        "appName": "app name",
+        "names": ["streamName", "Array"]
+    }
+}
