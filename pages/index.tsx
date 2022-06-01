@@ -1,7 +1,16 @@
 import type { NextPage } from 'next';
 import { useStore } from './_app';
 import { useRouter } from 'next/router';
-import { Box, Drawer, List, ListSubheader } from '@mui/material';
+import {
+    Box,
+    Divider,
+    Drawer,
+    List,
+    ListItem,
+    ListItemButton,
+    ListItemText,
+    ListSubheader,
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import StreamContent from '../components/StreamContent';
 import StreamListItem from '../components/StreamListItem';
@@ -35,8 +44,19 @@ const Home: NextPage = () => {
                 }}
                 variant="permanent"
             >
-                <ListSubheader>混流</ListSubheader>
                 <List disablePadding>
+                    <ListItem disablePadding>
+                        <ListItemButton onClick={() => setStream(null)}>
+                            <ListItemText
+                                primary="Mixtream"
+                                primaryTypographyProps={{ variant: 'h4' }}
+                                secondary="首页"
+                            />
+                        </ListItemButton>
+                    </ListItem>
+                    <Divider />
+
+                    <ListSubheader>混流</ListSubheader>
                     {mixes?.map((mix) => (
                         <StreamListItem
                             key={mix.output}
@@ -49,9 +69,7 @@ const Home: NextPage = () => {
                             }
                         />
                     )) ?? null}
-                </List>
-                <ListSubheader>输入流</ListSubheader>
-                <List disablePadding>
+                    <ListSubheader>输入流</ListSubheader>
                     {streams?.names.map((name) => (
                         <StreamListItem
                             key={name}
