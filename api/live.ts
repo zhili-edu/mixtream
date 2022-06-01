@@ -1,8 +1,10 @@
-import { getSignedHeaders } from './utils';
-import { useQuery } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useStore } from '../pages/_app';
 import type { CredentialInfo } from '../pages/api/info';
 import type { StreamInfo } from '../pages/api/stream';
+import type { MixInfo } from '../pages/api/mix';
+import type { CreateMixReq } from '../pages/api/stream/mix';
+import type { StateInfo } from '../pages/api/stream/state/[name]';
 
 export const useStreams = () => {
     const token = useStore((state) => state.token);
@@ -13,7 +15,37 @@ export const useStreams = () => {
         () =>
             fetch('/api/stream', {
                 headers: { Authorization: `Bearer ${token}` },
-            }).then((res) => res.json()),
+            }).then((res) => {
+                if (Math.floor(res.status / 100) !== 2) throw res;
+                return res.json();
+            }),
+        {
+            enabled: token != null,
+            staleTime: Infinity,
+            onError: (res: Response) => {
+                if (res.status === 403) {
+                    removeToken();
+                }
+            },
+        }
+    );
+};
+
+export const useMixes = () => {
+    const token = useStore((state) => state.token);
+    const removeToken = useStore((state) => state.removeToken);
+
+    return useQuery<MixInfo[], Response>(
+        'mixes',
+        () =>
+            fetch('/api/mix', {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+                .then((res) => {
+                    if (Math.floor(res.status / 100) !== 2) throw res;
+                    return res.json();
+                })
+                .then((json) => json.mixes),
         {
             enabled: token != null,
             onError: (res: Response) => {
@@ -34,89 +66,104 @@ export const useCredential = () => {
         () =>
             fetch('/api/info', {
                 headers: { Authorization: `Bearer ${token}` },
-            }).then((res) => res.json()),
+            }).then((res) => {
+                if (Math.floor(res.status / 100) !== 2) throw res;
+                return res.json();
+            }),
         {
             enabled: token != null,
-            onError: (res: Response) => {
+            staleTime: Infinity,
+            onError: async (res: Response) => {
                 if (res.status === 403) {
                     removeToken();
+                } else {
+                    const json = await res.json();
+                    if (json.Error) {
+                        alert(json.Error.Code + '\n' + json.Error.Message);
+                    } else {
+                        alert(json.error);
+                    }
                 }
             },
         }
     );
 };
 
-/*export const useLiveState = (appName: string, streamName: string) => {
-    const { data } = useCredential();
-
-    return useQuery(
-        ['liveState', streamName],
-        () => {
-            return fetch('https://live.tencentcloudapi.com', {
-                headers: getSignedHeaders(
-                    JSON.stringify({
-                        AppName: appName,
-                        StreamName: streamName,
-                        DomainName: data!.pushDomain,
-                    }),
-                    data!,
-                    'DescribeLiveStreamState'
-                ),
-                mode: 'no-cors',
-            }).then((res) => {
-                console.log(res);
-                console.log(res.body);
-                return res;
-            });
-        },
-        {
-            enabled: data != null,
-        }
-    );
-};*/
-
 export const useLiveState = (appName: string, streamName: string) => {
-    return useQuery<{
-        RequestId: string;
-        StreamState: 'active' | 'inactive' | 'forbid';
-    }>(
+    const token = useStore((state) => state.token);
+    const removeToken = useStore((state) => state.removeToken);
+
+    return useQuery<StateInfo, Response>(
         ['liveState', streamName],
         () => {
-            return fetch(`/api/stream/state/${streamName}`).then((res) =>
-                res.json()
-            );
+            return fetch(`/api/stream/state/${streamName}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            }).then((res) => {
+                if (Math.floor(res.status / 100) !== 2) throw res;
+                return res.json();
+            });
         },
         {
             staleTime: 3 * 1000,
             refetchInterval: 3 * 1000,
             refetchIntervalInBackground: true,
+            onError: async (res: Response) => {
+                if (res.status === 403) {
+                    removeToken();
+                } else {
+                    const json = await res.json();
+                    if (json.Error) {
+                        alert(json.Error.Code + '\n' + json.Error.Message);
+                    } else {
+                        alert(json.error);
+                    }
+                }
+            },
         }
     );
 };
 
-export const getLiveState = (
-    {
-        appName: AppName,
-        name: StreamName,
-        pushDomain: DomainName,
-    }: {
-        appName: string;
-        name: string;
-        pushDomain: string;
-    },
-    cretentials: { secretId: string; secretKey: string }
-): Promise<Response> => {
-    const body = {
-        AppName,
-        StreamName,
-        DomainName,
-    };
+export const useCreateMix = () => {
+    const token = useStore((state) => state.token);
+    const removeToken = useStore((state) => state.removeToken);
+    const queryClient = useQueryClient();
 
-    return fetch('/live.tencentcloudapi.com', {
-        headers: getSignedHeaders(
-            JSON.stringify(body),
-            cretentials,
-            'DescribeLiveStreamState'
-        ),
-    });
+    return useMutation<MixInfo, Response, CreateMixReq>(
+        ({ inputs, mixSessionName, output }: CreateMixReq): Promise<MixInfo> =>
+            fetch('/api/stream/mix', {
+                method: 'POST',
+                body: JSON.stringify({
+                    inputs,
+                    mixSessionName,
+                    output,
+                }),
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            }).then((res) => {
+                if (Math.floor(res.status / 100) !== 2) throw res;
+                return res.json();
+            }),
+        {
+            onSuccess: (mix: MixInfo) => {
+                queryClient.setQueryData<MixInfo[]>(
+                    'mixes',
+                    (mixes) => mixes?.concat(mix) ?? [mix]
+                );
+            },
+            onError: async (res: Response) => {
+                if (res.status === 403) {
+                    removeToken();
+                } else {
+                    const json = await res.json();
+                    if (json.Error) {
+                        alert(json.Error.Code + '\n' + json.Error.Message);
+                    } else {
+                        alert(json.error);
+                    }
+                }
+            },
+        }
+    );
 };

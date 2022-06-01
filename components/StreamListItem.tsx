@@ -28,7 +28,7 @@ const StreamListItem = ({
             <ListItemButton onClick={onClick}>
                 {data ? (
                     <ListItemIcon>
-                        {data.StreamState === 'active' ? (
+                        {data.state === 'active' ? (
                             <CheckCircleIcon color="success" />
                         ) : (
                             <StopCircleIcon color="error" />

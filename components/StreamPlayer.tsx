@@ -4,11 +4,9 @@ import { useEffect } from 'react';
 import { useCredential } from '../api/live';
 
 const StreamPlayer = ({
-    appName,
     name,
     id = 'player-id',
 }: {
-    appName: string;
     name: string;
     id?: string;
 }) => {
@@ -19,7 +17,7 @@ const StreamPlayer = ({
             ? new TcPlayer(id, {
                   flash: false,
                   live: true,
-                  m3u8: `http://${data.playDomain}/${appName}/${name}.m3u8`,
+                  m3u8: `http://${data.playDomain}/${data.appName}/${name}.m3u8`,
               })
             : undefined;
 
@@ -30,7 +28,7 @@ const StreamPlayer = ({
                 console.log(e);
             }
         };
-    }, [id, data, appName, name]);
+    }, [id, data, name]);
 
     if (data) return <div id={id} style={{ aspectRatio: '16 / 9' }} />;
 

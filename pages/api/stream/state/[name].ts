@@ -1,8 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSignedHeaders } from '../../../../api/utils';
 import { streamInfo } from '../../../../config.json';
+import verify from '../../../../utils/verify';
 
-const state = async (req: NextApiRequest, res: NextApiResponse<string>) => {
+export interface StateInfo {
+    state: 'active' | 'inactive' | 'forbid';
+}
+
+const state = async (req: NextApiRequest, res: NextApiResponse) => {
     const name = req.query.name;
     const body = JSON.stringify({
         AppName: streamInfo.appName,
@@ -18,9 +23,15 @@ const state = async (req: NextApiRequest, res: NextApiResponse<string>) => {
             { secretId: streamInfo.secretId, secretKey: streamInfo.secretKey },
             'DescribeLiveStreamState'
         ),
-    }).then((res) => res.json());
+    })
+        .then((res) => res.json())
+        .then((json) => json.Response);
 
-    res.json(json.Response);
+    if (json.Error) {
+        res.status(400).json({ Error: json.Error });
+    } else {
+        res.json({ state: json.StreamState });
+    }
 };
 
-export default state;
+export default verify(state, ['GET']);

@@ -1,28 +1,27 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import jwt from 'jsonwebtoken';
-import { jwtSecret, streamInfo } from '../../../config.json';
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { jsonDb } from '../../../config.json';
+import verify from '../../../utils/verify';
+import { JsonDB } from 'node-json-db';
+import { Config } from 'node-json-db/dist/lib/JsonDBConfig';
 
 export interface StreamInfo {
-    appName: string;
     names: string[];
 }
 
-const index = (req: NextApiRequest, res: NextApiResponse<StreamInfo | ''>) => {
-    if (req.method !== 'GET') return res.status(400).send('');
-    if (!req.headers.authorization) return res.status(401).send('');
+const index = (req: NextApiRequest, res: NextApiResponse<StreamInfo>) => {
+    const db = new JsonDB(new Config(jsonDb, true, false, '/'));
 
-    const bearer = req.headers.authorization.split(' ')[1];
+    let streams: string[];
     try {
-        jwt.verify(bearer, jwtSecret);
-    } catch (e: any) {
-        console.log(e);
-        return res.status(403).send('');
+        streams = db.getData('/stream');
+    } catch (e) {
+        db.push('/stream', []);
+        return res.status(200).json({ names: [] });
     }
 
-    res.send({
-        appName: streamInfo.appName,
-        names: streamInfo.names,
+    res.json({
+        names: streams,
     });
 };
 
-export default index;
+export default verify(index, ['GET']);
