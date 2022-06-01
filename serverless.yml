@@ -1,5 +1,6 @@
 component: http
-name: zl-mixtream
+name: mixtream
+stage: prod
 
 inputs:
   src:
@@ -7,10 +8,16 @@ inputs:
     hook: npm run build
     exclude:
       - .env
+      - 'node_modules/**'
+
   faas:
     runtime: Nodejs16.13
+    memorySize: 1024
     framework: nextjs
     name: ${name}
+    layers:
+      - name: ${output:${stage}:${app}:${name}-layer.name}
+        version: ${output:${stage}:${app}:${name}-layer.version}
 
   apigw:
     protocols:
@@ -28,5 +35,3 @@ inputs:
         protocols:
           - http
           - https
-
-app: zl-mixtream

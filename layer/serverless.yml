@@ -1,0 +1,11 @@
+app: mixtream
+stage: prod
+component: layer
+name: mixtream-layer
+
+inputs:
+  region: ap-guangzhou
+  name: ${name}
+  src: ../node_modules
+  runtimes:
+    - Nodejs16.13
