@@ -37,6 +37,21 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         <QueryClientProvider client={queryClient}>
             <ReactQueryDevtools initialIsOpen={false} />
             <CssBaseline />
+
+            <style jsx global>{`
+                html {
+                    min-height: 100%;
+                }
+
+                body,
+                div#__next,
+                div#__next > div:first-child {
+                    min-height: 100vh;
+                    display: flex;
+                    flex-grow: 1;
+                }
+            `}</style>
+
             <Component {...pageProps} />
         </QueryClientProvider>
     );

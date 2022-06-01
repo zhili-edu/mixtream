@@ -1,4 +1,4 @@
-import { Box, Button, TextField } from '@mui/material';
+import { Box, Button, TextField, Typography } from '@mui/material';
 import { useMutation } from 'react-query';
 import { useStore } from './_app';
 import { useState } from 'react';
@@ -27,15 +27,47 @@ const AuthPage = () => {
     const [pass, setPass] = useState<string>('');
 
     return (
-        <Box>
+        <Box
+            sx={{
+                flexGrow: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%',
+                gap: 2,
+            }}
+        >
+            <Box sx={{ flexGrow: 1 }} />
+            <Typography
+                sx={{
+                    fontSize: 120,
+                    fontWeight: 'bold',
+                    background:
+                        '-webkit-linear-gradient(60deg, #E21143, #FFB03A)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                }}
+            >
+                天王盖地虎？
+            </Typography>
             <TextField value={pass} onChange={(e) => setPass(e.target.value)} />
             <Button
+                color="info"
+                variant="contained"
                 onClick={() => {
                     mutation.mutate(pass);
+                }}
+                sx={{
+                    mt: 2,
+                    fontSize: 18,
+                    width: '8%',
+                    height: '5%',
                 }}
             >
                 yes
             </Button>
+            <Box sx={{ flexGrow: 1.5 }} />
         </Box>
     );
 };

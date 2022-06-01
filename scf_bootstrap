@@ -1,9 +1,0 @@
-#!/var/lang/node16/bin/node
-
-const { startServer } = require('next/dist/server/lib/start-server');
-startServer({ hostname: '0.0.0.0', port: 9000 })
-    .then((app) => app.prepare())
-    .catch((_e) => {
-        process.exit(1);
-    })
-;
