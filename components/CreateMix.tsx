@@ -14,7 +14,7 @@ const CreateMix = ({ inputs, sx }: { inputs: string[]; sx?: SxProps }) => {
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 2,
-                px: 4,
+                px: 1,
                 ...sx,
             }}
         >
@@ -33,6 +33,7 @@ const CreateMix = ({ inputs, sx }: { inputs: string[]; sx?: SxProps }) => {
 
             <Button
                 variant="contained"
+                disabled={inputs.length > 12}
                 onClick={() =>
                     mutation.mutate({
                         inputs,
@@ -41,7 +42,7 @@ const CreateMix = ({ inputs, sx }: { inputs: string[]; sx?: SxProps }) => {
                     })
                 }
             >
-                创建混流
+                {inputs.length <= 12 ? '创建混流' : '输入流过多'}
             </Button>
         </Box>
     );

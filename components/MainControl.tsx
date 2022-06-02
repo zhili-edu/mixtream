@@ -1,4 +1,4 @@
-import { Box, Paper, Typography } from '@mui/material';
+import { Box, Divider, Paper, Typography } from '@mui/material';
 import type { SxProps } from '@mui/system';
 import { useMixes, useStreams } from '../api/live';
 import { displayConfig } from '../config.json';
@@ -30,34 +30,48 @@ const MainControl = ({ sx }: { sx?: SxProps }) => {
                         display: 'flex',
                         alignItems: 'flex-start',
                         gap: 2,
-                        p: 1.5,
+                        p: 2,
                         width: '100%',
                     }}
                 >
-                    {Array.from(
-                        {
-                            length:
-                                Math.floor(
-                                    (streams.names.length - 1) /
-                                        displayConfig.groupCount
-                                ) + 1,
-                        },
-                        (_, idx) => (
-                            <ColumnCheck
-                                key={idx}
-                                names={streams.names.slice(
-                                    idx * displayConfig.groupCount,
-                                    (idx + 1) * displayConfig.groupCount
-                                )}
-                                checked={checked}
-                                setChecked={setChecked}
-                            />
-                        )
-                    )}
+                    <Box
+                        sx={{
+                            flexGrow: 1,
+                            display: 'flex',
+                            width: '70%',
+                            // overflow: 'scroll',
+                            flexWrap: 'wrap',
+                            gap: 2,
+                        }}
+                    >
+                        {Array.from(
+                            {
+                                length:
+                                    Math.floor(
+                                        (streams.names.length - 1) /
+                                            displayConfig.groupCount
+                                    ) + 1,
+                            },
+                            (_, idx) => (
+                                <ColumnCheck
+                                    key={idx}
+                                    names={streams.names.slice(
+                                        idx * displayConfig.groupCount,
+                                        (idx + 1) * displayConfig.groupCount
+                                    )}
+                                    checked={checked}
+                                    setChecked={setChecked}
+                                    sx={{ flexShrink: 0 }}
+                                />
+                            )
+                        )}
+                    </Box>
+
+                    {/*<Divider orientation="vertical" />*/}
 
                     <CreateMix
                         inputs={checked}
-                        sx={{ flexGrow: 1, alignSelf: 'center' }}
+                        sx={{ flexGrow: 0, width: '20%' }}
                     />
                 </Paper>
             ) : null}

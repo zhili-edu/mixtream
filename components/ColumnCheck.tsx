@@ -1,13 +1,16 @@
 import { Box, Checkbox, Paper, Typography } from '@mui/material';
+import type { SxProps } from '@mui/system';
 
 const ColumnCheck = ({
     names,
     checked,
     setChecked,
+    sx,
 }: {
     names: string[];
     checked: string[];
     setChecked: (arg0: string[]) => void;
+    sx?: SxProps;
 }) => {
     return (
         <Paper
@@ -19,6 +22,7 @@ const ColumnCheck = ({
                 gap: 2,
                 p: 2,
                 px: 3,
+                ...sx,
             }}
         >
             <Box
@@ -58,7 +62,7 @@ const ColumnCheck = ({
                 />
                 <Typography>全选</Typography>
             </Box>
-            {names.map((name, idx) => (
+            {names.map((name) => (
                 <Box
                     key={name}
                     sx={{
