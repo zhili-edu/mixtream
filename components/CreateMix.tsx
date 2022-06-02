@@ -14,7 +14,7 @@ const CreateMix = ({ inputs, sx }: { inputs: string[]; sx?: SxProps }) => {
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 2,
-                px: 2,
+                px: 4,
                 ...sx,
             }}
         >
@@ -26,6 +26,7 @@ const CreateMix = ({ inputs, sx }: { inputs: string[]; sx?: SxProps }) => {
 
             <TextField
                 label="混流Session名称"
+                placeholder="唯一Session ID，不可重复"
                 value={session}
                 onChange={(e) => setSession(e.target.value)}
             />

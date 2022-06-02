@@ -3,7 +3,7 @@ import { useStore } from '../pages/_app';
 import type { CredentialInfo } from '../pages/api/info';
 import type { StreamInfo } from '../pages/api/stream';
 import type { MixInfo } from '../pages/api/mix';
-import type { CreateMixReq } from '../pages/api/stream/mix';
+import type { CreateMixReq, DeleteMixRes } from '../pages/api/stream/mix';
 import type { StateInfo } from '../pages/api/stream/state/[name]';
 
 export const useStreams = () => {
@@ -150,6 +150,52 @@ export const useCreateMix = () => {
                 queryClient.setQueryData<MixInfo[]>(
                     'mixes',
                     (mixes) => mixes?.concat(mix) ?? [mix]
+                );
+            },
+            onError: async (res: Response) => {
+                if (res.status === 403) {
+                    removeToken();
+                } else {
+                    const json = await res.json();
+                    if (json.Error) {
+                        alert(json.Error.Code + '\n' + json.Error.Message);
+                    } else {
+                        alert(json.error);
+                    }
+                }
+            },
+        }
+    );
+};
+
+export const useDeleteMix = () => {
+    const token = useStore((state) => state.token);
+    const removeToken = useStore((state) => state.removeToken);
+    const queryClient = useQueryClient();
+
+    return useMutation<DeleteMixRes, Response, string>(
+        (mixSessionName: string) =>
+            fetch('/api/stream/mix', {
+                method: 'DELETE',
+                body: JSON.stringify({
+                    mixSessionName,
+                }),
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            }).then((res) => {
+                if (Math.floor(res.status / 100) !== 2) throw res;
+                return res.json();
+            }),
+        {
+            onSuccess: (res) => {
+                queryClient.setQueryData<MixInfo[]>(
+                    'mixes',
+                    (mixes) =>
+                        mixes?.filter(
+                            (mix) => mix.mixSessionName !== res.mixSessionName
+                        ) ?? []
                 );
             },
             onError: async (res: Response) => {

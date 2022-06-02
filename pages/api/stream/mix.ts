@@ -17,6 +17,11 @@ export interface DeleteMixReq {
     mixSessionName: string;
 }
 
+export interface DeleteMixRes {
+    ok: true;
+    mixSessionName: string;
+}
+
 const createMix = async (newMix: CreateMixReq): Promise<MixInfo> => {
     const db = new JsonDB(new Config(jsonDb, true, false, '/'));
     let mixes: MixInfo[];
@@ -134,7 +139,7 @@ const mix = async (req: NextApiRequest, res: NextApiResponse) => {
             res.json(newMix);
         } else if (req.method === 'DELETE') {
             await deleteMix(req.body);
-            res.json({ ok: true });
+            res.json({ ok: true, mixSessionName: req.body.mixSessionName });
         } else {
             res.status(404).json({ error: 'Wrong Method' });
         }

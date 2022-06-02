@@ -1,13 +1,15 @@
 import { Box, Paper, Typography } from '@mui/material';
 import type { SxProps } from '@mui/system';
-import { useStreams } from '../api/live';
+import { useMixes, useStreams } from '../api/live';
 import { displayConfig } from '../config.json';
 import { useState } from 'react';
 import ColumnCheck from './ColumnCheck';
 import CreateMix from './CreateMix';
+import MixInfoCard from './MixInfoCard';
 
 const MainControl = ({ sx }: { sx?: SxProps }) => {
-    const { data } = useStreams();
+    const { data: streams } = useStreams();
+    const { data: mixes } = useMixes();
 
     const [checked, setChecked] = useState<string[]>([]);
 
@@ -16,18 +18,18 @@ const MainControl = ({ sx }: { sx?: SxProps }) => {
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 1,
+                gap: 2,
                 p: 2,
                 ...sx,
             }}
         >
             <Typography variant="h3">混流</Typography>
-            {data ? (
+            {streams ? (
                 <Paper
                     sx={{
                         display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
+                        alignItems: 'flex-start',
+                        gap: 2,
                         p: 1.5,
                         width: '100%',
                     }}
@@ -36,14 +38,14 @@ const MainControl = ({ sx }: { sx?: SxProps }) => {
                         {
                             length:
                                 Math.floor(
-                                    (data.names.length - 1) /
+                                    (streams.names.length - 1) /
                                         displayConfig.groupCount
                                 ) + 1,
                         },
                         (_, idx) => (
                             <ColumnCheck
                                 key={idx}
-                                names={data.names.slice(
+                                names={streams.names.slice(
                                     idx * displayConfig.groupCount,
                                     (idx + 1) * displayConfig.groupCount
                                 )}
@@ -53,7 +55,26 @@ const MainControl = ({ sx }: { sx?: SxProps }) => {
                         )
                     )}
 
-                    <CreateMix inputs={checked} sx={{ flexGrow: 1 }} />
+                    <CreateMix
+                        inputs={checked}
+                        sx={{ flexGrow: 1, alignSelf: 'center' }}
+                    />
+                </Paper>
+            ) : null}
+
+            {mixes ? (
+                <Paper
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 2,
+                        p: 2,
+                    }}
+                >
+                    <Typography variant="h5">已混流：</Typography>
+                    {mixes.map((mix) => (
+                        <MixInfoCard key={mix.mixSessionName} mix={mix} />
+                    ))}
                 </Paper>
             ) : null}
         </Box>
