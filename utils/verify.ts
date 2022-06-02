@@ -4,7 +4,7 @@ import { jwtSecret } from '../config.json';
 
 const verify =
     (handler: NextApiHandler, method?: string[]): NextApiHandler =>
-    (req: NextApiRequest, res: NextApiResponse) => {
+    async (req: NextApiRequest, res: NextApiResponse) => {
         if (!req.headers.authorization)
             return res.status(401).json({ error: 'Unauthorized' });
 
@@ -23,7 +23,7 @@ const verify =
                 error: 'Not Found',
             });
 
-        handler(req, res);
+        await handler(req, res);
     };
 
 export default verify;

@@ -34,17 +34,31 @@ const createMix = async (newMix: CreateMixReq): Promise<MixInfo> => {
 
     const body = JSON.stringify({
         MixStreamSessionId: newMix.mixSessionName,
-        InputStreamList: newMix.inputs.map((name: string, idx: number) => ({
-            InputStreamName: name,
-            LayoutParams: {
-                ImageLayer: idx + 2,
-                InputType: 5,
-                ImageHeight: 360,
-                ImageWidth: 640,
-                LocationX: (idx % 3) * 640,
-                LocationY: Math.floor(idx / 3) * 360,
+        InputStreamList: [
+            {
+                InputStreamName: 'bg',
+                LayoutParams: {
+                    ImageLayer: 1,
+                    InputType: 3,
+                    ImageHeight: 1080,
+                    ImageWidth: 1920,
+                    LocationX: 0,
+                    LocationY: 0,
+                    Color: '0x000000',
+                },
             },
-        })),
+            ...newMix.inputs.map((name: string, idx: number) => ({
+                InputStreamName: name,
+                LayoutParams: {
+                    ImageLayer: idx + 2,
+                    InputType: 5,
+                    ImageHeight: 360,
+                    ImageWidth: 640,
+                    LocationX: (idx % 3) * 640,
+                    LocationY: Math.floor(idx / 3) * 360,
+                },
+            })),
+        ],
         OutputParams: {
             OutputStreamName: newMix.output,
             OutputStreamType: 1,

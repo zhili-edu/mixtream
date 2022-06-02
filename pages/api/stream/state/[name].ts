@@ -30,7 +30,7 @@ const state = async (req: NextApiRequest, res: NextApiResponse) => {
     if (json.Error) {
         res.status(400).json({ Error: json.Error });
     } else {
-        res.json({ state: json.StreamState });
+        res.status(200).json({ state: json.StreamState });
     }
 };
 

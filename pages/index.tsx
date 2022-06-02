@@ -32,7 +32,7 @@ const Home: NextPage = () => {
 
     const drawerWidth = 250;
     return (
-        <Box sx={{ display: 'flex' }}>
+        <Box sx={{ display: 'flex', flexGrow: 1 }}>
             <Drawer
                 sx={{
                     width: drawerWidth,
@@ -61,7 +61,7 @@ const Home: NextPage = () => {
                         <StreamListItem
                             key={mix.output}
                             name={mix.output}
-                            selected={mix.output === mix.output}
+                            selected={mix.output === stream}
                             onClick={(_e) =>
                                 setStream(
                                     mix.output === stream ? null : mix.output
