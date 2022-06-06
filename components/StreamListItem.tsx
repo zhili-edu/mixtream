@@ -9,6 +9,7 @@ import { useStore } from '../pages/_app';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import StopCircleIcon from '@mui/icons-material/StopCircle';
 import { useLiveState } from '../api/live';
+import { useEffect, useState } from 'react';
 
 const StreamListItem = ({
     name,
@@ -20,8 +21,23 @@ const StreamListItem = ({
     onClick?: MouseEventHandler<HTMLDivElement>;
 }) => {
     const appName = useStore((state) => state.appName);
+    const [oldState, setOld] = useState<
+        'active' | 'inactive' | 'forbid' | undefined
+    >(undefined);
 
-    const { data, error } = useLiveState(appName, name);
+    const { data } = useLiveState(appName, name);
+
+    useEffect(() => {
+        if (data) {
+            if (oldState === 'active' && data.state === 'inactive') {
+                alert(`${name} 已断流`);
+            }
+            if (oldState && oldState !== 'active' && data.state === 'active') {
+                alert(`${name} 开始推流`);
+            }
+            setOld(data.state);
+        }
+    }, [data]);
 
     return (
         <ListItem key={name} selected={selected} disablePadding>
