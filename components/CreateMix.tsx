@@ -5,7 +5,6 @@ import { useCreateMix } from '../api/live';
 
 const CreateMix = ({ inputs, sx }: { inputs: string[]; sx?: SxProps }) => {
     const [output, setOutput] = useState<string>('');
-    const [session, setSession] = useState<string>('');
     const mutation = useCreateMix();
 
     return (
@@ -24,20 +23,13 @@ const CreateMix = ({ inputs, sx }: { inputs: string[]; sx?: SxProps }) => {
                 onChange={(e) => setOutput(e.target.value)}
             />
 
-            <TextField
-                label="混流Session名称"
-                placeholder="唯一Session ID，不可重复"
-                value={session}
-                onChange={(e) => setSession(e.target.value)}
-            />
-
             <Button
                 variant="contained"
                 disabled={inputs.length > 12}
                 onClick={() =>
                     mutation.mutate({
                         inputs,
-                        mixSessionName: session,
+                        mixSessionName: output,
                         output,
                     })
                 }
