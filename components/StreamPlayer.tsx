@@ -17,7 +17,7 @@ const StreamPlayer = ({
             ? new TcPlayer(id, {
                   flash: false,
                   live: true,
-                  m3u8: `http://${data.playDomain}/${data.appName}/${name}.m3u8`,
+                  m3u8: `https://${data.playDomain}/${data.appName}/${name}.m3u8`,
               })
             : undefined;
 
