@@ -4,6 +4,7 @@ import { ReactQueryDevtools } from 'react-query/devtools';
 import create from 'zustand';
 import { persist } from 'zustand/middleware';
 import { CssBaseline } from '@mui/material';
+import { Toaster } from 'react-hot-toast';
 
 const queryClient = new QueryClient();
 
@@ -51,6 +52,8 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
                     flex-grow: 1;
                 }
             `}</style>
+
+            <Toaster position="top-right" />
 
             <Component {...pageProps} />
         </QueryClientProvider>

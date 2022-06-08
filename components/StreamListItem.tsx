@@ -10,6 +10,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import StopCircleIcon from '@mui/icons-material/StopCircle';
 import { useLiveState } from '../api/live';
 import { useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast';
 
 const StreamListItem = ({
     name,
@@ -30,10 +31,10 @@ const StreamListItem = ({
     useEffect(() => {
         if (data) {
             if (oldState === 'active' && data.state === 'inactive') {
-                alert(`${name} 已断流`);
+                toast.error(`${name} 已断流`);
             }
             if (oldState && oldState !== 'active' && data.state === 'active') {
-                alert(`${name} 开始推流`);
+                toast.success(`${name} 开始推流`);
             }
             setOld(data.state);
         }
